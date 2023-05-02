@@ -1,27 +1,17 @@
-import _ from 'underscore';
-import React, {forwardRef} from 'react';
+import lodashGet from 'lodash/get';
+import React, {useState, useEffect, useCallback} from 'react';
+import {View} from 'react-native';
+import {useRoute} from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import Picker from './Picker';
 import withLocalize, {withLocalizePropTypes} from './withLocalize';
+import MenuItemWithTopDescription from './MenuItemWithTopDescription';
+import Navigation from '../libs/Navigation/Navigation';
+import ROUTES from '../ROUTES';
+import FormHelpMessage from './FormHelpMessage';
 
 const propTypes = {
-    /** The label for the field */
-    label: PropTypes.string,
-
-    /** A callback method that is called when the value changes and it receives the selected value as an argument. */
-    onInputChange: PropTypes.func.isRequired,
-
-    /** The value that needs to be selected */
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-
-    /** The ID used to uniquely identify the input in a Form */
-    inputID: PropTypes.string,
-
-    /** Saves a draft of the input value when used in a form */
-    shouldSaveDraft: PropTypes.bool,
-
-    /** Callback that is called when the text input is blurred */
-    onBlur: PropTypes.func,
+    /** Current State from user address  */
+    stateName: PropTypes.string,
 
     /** Error text to display */
     errorText: PropTypes.string,
@@ -30,38 +20,55 @@ const propTypes = {
 };
 
 const defaultProps = {
-    label: '',
-    value: undefined,
+    stateName: '',
     errorText: '',
-    shouldSaveDraft: false,
-    inputID: undefined,
-    onBlur: () => {},
 };
 
-const StatePicker = forwardRef((props, ref) => {
-    const STATES = _.chain(props.translate('allStates'))
-        .sortBy(state => state.stateName.toLowerCase())
-        .map(state => ({value: state.stateISO, label: state.stateName}))
-        .value();
+function BaseStatePicker(props) {
+    const route = useRoute();
+    const [stateTitle, setStateTitle] = useState('');
+    const selectedStateName = lodashGet(route, 'params.stateName');
+    const stateName = props.stateName;
+    const onInputChange = props.onInputChange;
+
+    useEffect(() => {
+        console.log('selectedStateName', selectedStateName, stateTitle);
+        if (!selectedStateName || selectedStateName === stateTitle) {
+            return;
+        }
+
+        setStateTitle(selectedStateName || stateName);
+        onInputChange(selectedStateName || stateName);
+    },
+    [stateName, selectedStateName, stateTitle, onInputChange]);
+
+    const navigateToCountrySelector = useCallback(() => {
+        Navigation.navigate(ROUTES.getUsaStateSelectionRoute(selectedStateName || stateName, Navigation.getActiveRoute()));
+    }, [stateName, selectedStateName]);
 
     return (
-        <Picker
-            ref={ref}
-            inputID={props.inputID}
-            placeholder={{value: '', label: '-'}}
-            items={STATES}
-            onInputChange={props.onInputChange}
-            value={props.value}
-            label={props.label || props.translate('common.state')}
-            errorText={props.errorText}
-            onBlur={props.onBlur}
-            shouldSaveDraft={props.shouldSaveDraft}
-        />
-    );
-});
+        <View>
+            <MenuItemWithTopDescription
+                ref={props.forwardedRef}
+                shouldShowRightIcon
+                title={stateTitle}
+                description={props.translate('common.state')}
+                onPress={navigateToCountrySelector}
+            />
+            <FormHelpMessage message={props.errorText} />
+        </View>
 
-StatePicker.propTypes = propTypes;
-StatePicker.defaultProps = defaultProps;
+    );
+}
+
+BaseStatePicker.propTypes = propTypes;
+BaseStatePicker.defaultProps = defaultProps;
+
+const StatePicker = React.forwardRef((props, ref) => (
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <BaseStatePicker {...props} forwardedRef={ref} />
+));
+
 StatePicker.displayName = 'StatePicker';
 
 export default withLocalize(StatePicker);

@@ -69,6 +69,16 @@ class AddressPage extends Component {
         };
     }
 
+    componentDidUpdate(prevProps) {
+        const prevCountryISO = lodashGet(prevProps.route, 'params.countryISO');
+        const currentCountryISO = lodashGet(this.props.route, 'params.countryISO');
+        console.log('prevCountryISO', prevCountryISO, ' -> currentCountryISO', currentCountryISO);
+        if (currentCountryISO && prevCountryISO !== currentCountryISO) {
+            console.log('onCountryUpdate', currentCountryISO);
+            this.onCountryUpdate(currentCountryISO);
+        }
+    }
+
     /**
      * @param {String} newCountry - new country selected in form
      */
@@ -109,6 +119,9 @@ class AddressPage extends Component {
             'state',
         ];
 
+        console.log('validate', values);
+        console.log('isUsaForm', this.state.isUsaForm, ' -> state', values.state);
+
         // Check "State" dropdown is a valid state if selected Country is USA.
         if (this.state.isUsaForm && !COMMON_CONST.STATES[values.state]) {
             errors.state = this.props.translate('common.error.fieldRequired');
@@ -147,6 +160,7 @@ class AddressPage extends Component {
     render() {
         const address = lodashGet(this.props.privatePersonalDetails, 'address') || {};
         const [street1, street2] = (address.street || '').split('\n');
+        const selectedCountryISO = lodashGet(this.props.route, 'params.countryISO');
 
         return (
             <ScreenWrapper includeSafeAreaPaddingBottom={false}>
@@ -189,17 +203,18 @@ class AddressPage extends Component {
                             maxLength={CONST.FORM_CHARACTER_LIMIT}
                         />
                     </View>
-                    <View style={styles.mb4}>
-                        <TextInput
-                            inputID="city"
-                            label={this.props.translate('common.city')}
-                            defaultValue={address.city || ''}
-                            maxLength={CONST.FORM_CHARACTER_LIMIT}
+                    <View>
+                        <CountryPicker
+                            inputID="country"
+                            selectedCountryISO={selectedCountryISO}
+                            countryISO={address.country}
+                            defaultValue={PersonalDetails.getCountryISO(address.country)}
                         />
                     </View>
                     <View style={styles.mb4}>
                         {this.state.isUsaForm ? (
                             <StatePicker
+                                stateISO={address.state}
                                 inputID="state"
                                 defaultValue={address.state || ''}
                             />
@@ -214,6 +229,14 @@ class AddressPage extends Component {
                     </View>
                     <View style={styles.mb4}>
                         <TextInput
+                            inputID="city"
+                            label={this.props.translate('common.city')}
+                            defaultValue={address.city || ''}
+                            maxLength={CONST.FORM_CHARACTER_LIMIT}
+                        />
+                    </View>
+                    <View style={styles.mb4}>
+                        <TextInput
                             inputID="zipPostCode"
                             label={this.props.translate('common.zipPostCode')}
                             autoCapitalize="characters"
@@ -222,13 +245,7 @@ class AddressPage extends Component {
                             hint={this.state.zipFormat}
                         />
                     </View>
-                    <View>
-                        <CountryPicker
-                            inputID="country"
-                            onValueChange={this.onCountryUpdate}
-                            defaultValue={PersonalDetails.getCountryISO(address.country)}
-                        />
-                    </View>
+
                 </Form>
             </ScreenWrapper>
         );

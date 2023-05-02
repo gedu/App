@@ -96,6 +96,14 @@ function getCountryISO(countryName) {
     return _.findKey(CONST.ALL_COUNTRIES, country => country === countryName) || '';
 }
 
+function getCountryNameBy(countryISO) {
+    if (_.isEmpty(countryISO) || countryISO.length !== 2) {
+        return countryISO;
+    }
+
+    return CONST.ALL_COUNTRIES[countryISO] || '';
+}
+
 /**
  * @param {String} pronouns
  */
@@ -390,4 +398,5 @@ export {
     updateAutomaticTimezone,
     updateSelectedTimezone,
     getCountryISO,
+    getCountryNameBy,
 };

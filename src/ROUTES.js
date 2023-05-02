@@ -62,6 +62,10 @@ export default {
     getReportRoute: reportID => `r/${reportID}`,
     SELECT_YEAR: 'select-year',
     getYearSelectionRoute: (minYear, maxYear, currYear, backTo) => `select-year?min=${minYear}&max=${maxYear}&year=${currYear}&backTo=${backTo}`,
+    SETTINGS_SELECT_COUNTRY: 'select-country',
+    getCountrySelectionRoute: (countryISO, backTo) => `select-country?countryISO=${countryISO}&backTo=${backTo}`,
+    SETTINGS_USA_STATES: 'select-usa-states',
+    getUsaStateSelectionRoute: (stateName, backTo) => `select-usa-states?stateName=${stateName}&backTo=${backTo}`,
 
     /** This is a utility route used to go to the user's concierge chat, or the sign-in page if the user's not authenticated */
     CONCIERGE: 'concierge',

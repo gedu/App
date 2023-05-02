@@ -337,6 +337,18 @@ class AuthScreens extends React.Component {
                     listeners={modalScreenListeners}
                 />
                 <RootStack.Screen
+                    name="Select_Country"
+                    options={modalScreenOptions}
+                    component={ModalStackNavigators.CountrySelectorStackNavigator}
+                    listeners={modalScreenListeners}
+                />
+                <RootStack.Screen
+                    name="Select_USA_State"
+                    options={modalScreenOptions}
+                    component={ModalStackNavigators.UsaStateSelectorStackNavigator}
+                    listeners={modalScreenListeners}
+                />
+                <RootStack.Screen
                     name={SCREENS.NOT_FOUND}
                     options={{headerShown: false}}
                     component={NotFoundPage}
