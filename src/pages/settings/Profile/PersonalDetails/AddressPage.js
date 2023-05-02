@@ -59,13 +59,18 @@ class AddressPage extends Component {
         this.validate = this.validate.bind(this);
         this.updateAddress = this.updateAddress.bind(this);
         this.onCountryUpdate = this.onCountryUpdate.bind(this);
+        this.onCountryStateUpdate = this.onCountryStateUpdate.bind(this);
 
-        const currentCountry = lodashGet(this.props.privatePersonalDetails, 'address.country') || '';
+        const currentAddress = lodashGet(this.props.privatePersonalDetails, 'address') || {};
+        const currentCountry = currentAddress.country || '';
         const currentCountryISO = PersonalDetails.getCountryISO(currentCountry) || CONST.COUNTRY.US;
         const zipSampleFormat = lodashGet(CONST.COUNTRY_ZIP_REGEX_DATA, [currentCountryISO, 'samples'], '');
+
         this.state = {
             isUsaForm: (currentCountry === CONST.COUNTRY.US || currentCountry === CONST.USA_COUNTRY_NAME),
             zipFormat: this.props.translate('common.zipCodeExampleFormat', {zipSampleFormat}),
+            country: currentCountry,
+            countryState: currentAddress.state,
         };
     }
 
@@ -87,7 +92,13 @@ class AddressPage extends Component {
         this.setState({
             isUsaForm: newCountry === CONST.COUNTRY.US,
             zipFormat: this.props.translate('common.zipCodeExampleFormat', {zipSampleFormat}),
+            country: newCountry,
+
         });
+    }
+
+    onCountryStateUpdate(newCountryState) {
+        this.setState({countryState: newCountryState});
     }
 
     /**
@@ -118,9 +129,6 @@ class AddressPage extends Component {
             'country',
             'state',
         ];
-
-        console.log('validate', values);
-        console.log('isUsaForm', this.state.isUsaForm, ' -> state', values.state);
 
         // Check "State" dropdown is a valid state if selected Country is USA.
         if (this.state.isUsaForm && !COMMON_CONST.STATES[values.state]) {
@@ -160,7 +168,6 @@ class AddressPage extends Component {
     render() {
         const address = lodashGet(this.props.privatePersonalDetails, 'address') || {};
         const [street1, street2] = (address.street || '').split('\n');
-        const selectedCountryISO = lodashGet(this.props.route, 'params.countryISO');
 
         return (
             <ScreenWrapper includeSafeAreaPaddingBottom={false}>
@@ -184,6 +191,8 @@ class AddressPage extends Component {
                             label={this.props.translate('common.addressLine', {lineNumber: 1})}
                             defaultValue={street1 || ''}
                             isLimitedToUSA={false}
+                            onCountryChange={this.onCountryUpdate}
+                            onStateChange={this.onCountryStateUpdate}
                             renamedInputKeys={{
                                 street: 'addressLine1',
                                 street2: 'addressLine2',
@@ -206,7 +215,7 @@ class AddressPage extends Component {
                     <View>
                         <CountryPicker
                             inputID="country"
-                            selectedCountryISO={selectedCountryISO}
+                            selectedCountryISO={this.state.country}
                             countryISO={address.country}
                             defaultValue={PersonalDetails.getCountryISO(address.country)}
                         />
@@ -216,7 +225,7 @@ class AddressPage extends Component {
                             <StatePicker
                                 stateISO={address.state}
                                 inputID="state"
-                                defaultValue={address.state || ''}
+                                defaultValue={address.state || this.state.countryState}
                             />
                         ) : (
                             <TextInput

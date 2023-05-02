@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import {View} from 'react-native';
 import PropTypes from 'prop-types';
+import styles from '../styles/styles';
 import withLocalize, {withLocalizePropTypes} from './withLocalize';
 import MenuItemWithTopDescription from './MenuItemWithTopDescription';
 import * as PersonalDetails from '../libs/actions/PersonalDetails';
@@ -36,12 +37,13 @@ function BaseCountryPicker(props) {
     const onInputChange = props.onInputChange;
 
     useEffect(() => {
-        console.log('selectedCountryISO', selectedCountryISO, countryTitle.current);
         if (!selectedCountryISO || selectedCountryISO === countryTitle.current.iso) {
             return;
         }
         countryTitle.current = {title: PersonalDetails.getCountryNameBy(selectedCountryISO || countryISO), iso: selectedCountryISO || countryISO};
-        onInputChange(countryTitle.current.title);
+
+        // Needed to call onInputChange, so Form can update the validation and values
+        onInputChange(countryTitle.current.iso);
     },
     [countryISO, selectedCountryISO, onInputChange]);
 
@@ -53,10 +55,13 @@ function BaseCountryPicker(props) {
         <View>
             <MenuItemWithTopDescription
                 ref={props.forwardedRef}
+                wrapperStyle={styles.ph0}
                 shouldShowRightIcon
                 title={countryTitle.current.title}
                 description={props.translate('common.country')}
                 onPress={navigateToCountrySelector}
+                onValueChange={(newValue) => { console.log('2>>>onValueChange', newValue); }}
+
             />
             <FormHelpMessage message={props.errorText} />
         </View>

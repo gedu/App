@@ -48,6 +48,10 @@ const propTypes = {
     /** A callback function when the value of this field has changed */
     onInputChange: PropTypes.func.isRequired,
 
+    onCountryChange: PropTypes.func,
+
+    onStateChange: PropTypes.func,
+
     /** Customize the TextInput container */
     // eslint-disable-next-line react/forbid-prop-types
     containerStyles: PropTypes.arrayOf(PropTypes.object),
@@ -73,6 +77,8 @@ const defaultProps = {
     inputID: undefined,
     shouldSaveDraft: false,
     onBlur: () => {},
+    onCountryChange: () => {},
+    onStateChange: () => {},
     errorText: '',
     hint: '',
     value: undefined,
@@ -159,21 +165,30 @@ const AddressSearch = (props) => {
             state: state || stateAutoCompleteFallback,
         };
 
+        const isValidCountryCode = lodashGet(CONST.ALL_COUNTRIES, country);
+        if (isValidCountryCode) {
+            values.country = country;
+            if (props.onCountryChange) {
+                props.onCountryChange(country);
+            }
+        }
+
         // If the address is not in the US, use the full length state name since we're displaying the address's
         // state / province in a TextInput instead of in a picker.
-        if (country !== CONST.COUNTRY.US) {
+        const isUS = country === CONST.COUNTRY.US;
+        if (!isUS) {
             values.state = longStateName;
+        }
+
+        if (props.onStateChange) {
+            console.log('onStateChange', isUS ? state : longStateName, isUS);
+            props.onStateChange(isUS ? state : longStateName, isUS);
         }
 
         // Not all pages define the Address Line 2 field, so in that case we append any additional address details
         // (e.g. Apt #) to Address Line 1
         if (subpremise && typeof props.renamedInputKeys.street2 === 'undefined') {
             values.street += `, ${subpremise}`;
-        }
-
-        const isValidCountryCode = lodashGet(CONST.ALL_COUNTRIES, country);
-        if (isValidCountryCode) {
-            values.country = country;
         }
 
         if (props.inputID) {

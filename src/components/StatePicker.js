@@ -3,6 +3,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import PropTypes from 'prop-types';
+import styles from '../styles/styles';
 import withLocalize, {withLocalizePropTypes} from './withLocalize';
 import MenuItemWithTopDescription from './MenuItemWithTopDescription';
 import Navigation from '../libs/Navigation/Navigation';
@@ -11,7 +12,7 @@ import FormHelpMessage from './FormHelpMessage';
 
 const propTypes = {
     /** Current State from user address  */
-    stateName: PropTypes.string,
+    stateISO: PropTypes.string,
 
     /** Error text to display */
     errorText: PropTypes.string,
@@ -20,7 +21,7 @@ const propTypes = {
 };
 
 const defaultProps = {
-    stateName: '',
+    stateISO: '',
     errorText: '',
 };
 
@@ -28,30 +29,38 @@ function BaseStatePicker(props) {
     const route = useRoute();
     const [stateTitle, setStateTitle] = useState('');
     const selectedStateName = lodashGet(route, 'params.stateName');
-    const stateName = props.stateName;
+    const selectedStateISO = lodashGet(route, 'params.stateISO');
+    const stateISO = props.stateISO;
     const onInputChange = props.onInputChange;
+    const defaultValue = props.defaultValue;
 
     useEffect(() => {
-        console.log('selectedStateName', selectedStateName, stateTitle);
         if (!selectedStateName || selectedStateName === stateTitle) {
             return;
         }
 
-        setStateTitle(selectedStateName || stateName);
-        onInputChange(selectedStateName || stateName);
+        setStateTitle(selectedStateName || stateISO);
+
+        // Needed to call onInputChange, so Form can update the validation and values
+        onInputChange(selectedStateISO);
     },
-    [stateName, selectedStateName, stateTitle, onInputChange]);
+    [stateISO, selectedStateName, stateTitle, onInputChange, selectedStateISO]);
+
+    useEffect(() => {
+        console.log('stateDefault use effect: ', defaultValue);
+    }, [defaultValue]);
 
     const navigateToCountrySelector = useCallback(() => {
-        Navigation.navigate(ROUTES.getUsaStateSelectionRoute(selectedStateName || stateName, Navigation.getActiveRoute()));
-    }, [stateName, selectedStateName]);
+        Navigation.navigate(ROUTES.getUsaStateSelectionRoute(selectedStateName || stateISO, Navigation.getActiveRoute()));
+    }, [stateISO, selectedStateName]);
 
     return (
         <View>
             <MenuItemWithTopDescription
                 ref={props.forwardedRef}
+                wrapperStyle={styles.ph0}
                 shouldShowRightIcon
-                title={stateTitle}
+                title={stateTitle || defaultValue}
                 description={props.translate('common.state')}
                 onPress={navigateToCountrySelector}
             />
