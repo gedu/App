@@ -67,7 +67,7 @@ function extractFirstAndLastNameFromAvailableDetails({
     if (firstName || lastName) {
         return {firstName: firstName || '', lastName: lastName || ''};
     }
-    if (Str.removeSMSDomain(login) === displayName) {
+    if (login && Str.removeSMSDomain(login) === displayName) {
         return {firstName: '', lastName: ''};
     }
 
@@ -192,7 +192,7 @@ function updateAddress(street, street2, city, state, zip, country) {
     const parameters = {
         homeAddressStreet: street,
         addressStreet2: street2,
-        addressCity: city,
+        homeAddressCity: city,
         addressState: state,
         addressZipCode: zip,
         addressCountry: country,
