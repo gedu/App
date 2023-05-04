@@ -70,7 +70,6 @@ class AddressPage extends Component {
             isUsaForm: (currentCountry === CONST.COUNTRY.US || currentCountry === CONST.USA_COUNTRY_NAME),
             zipFormat: this.props.translate('common.zipCodeExampleFormat', {zipSampleFormat}),
             country: currentCountry,
-            countryState: currentAddress.state,
         };
     }
 
@@ -97,8 +96,8 @@ class AddressPage extends Component {
         });
     }
 
-    onCountryStateUpdate(newCountryState) {
-        this.setState({countryState: newCountryState});
+    onCountryStateUpdate(selectedCountryState) {
+        this.props.navigation.setParams({stateISO: selectedCountryState});
     }
 
     /**
@@ -226,7 +225,6 @@ class AddressPage extends Component {
                                 stateISO={address.state}
                                 inputID="state"
                                 defaultValue={address.state || ''}
-                                selectedStateISO={this.state.countryState}
                             />
                         ) : (
                             <TextInput

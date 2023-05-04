@@ -2,8 +2,8 @@ import _ from 'underscore';
 import lodashGet from 'lodash/get';
 import React, {useCallback, useMemo, useState} from 'react';
 import PropTypes from 'prop-types';
+import {withOnyx} from 'react-native-onyx';
 import withLocalize, {withLocalizePropTypes} from '../components/withLocalize';
-import withCurrentUserPersonalDetails from '../components/withCurrentUserPersonalDetails';
 import ScreenWrapper from '../components/ScreenWrapper';
 import HeaderWithCloseButton from '../components/HeaderWithCloseButton';
 import Navigation from '../libs/Navigation/Navigation';
@@ -12,6 +12,7 @@ import themeColors from '../styles/themes/default';
 import OptionsSelector from '../components/OptionsSelector';
 import styles from '../styles/styles';
 import compose from '../libs/compose';
+import ONYXKEYS from '../ONYXKEYS';
 
 const propTypes = {
     route: PropTypes.shape({
@@ -21,14 +22,22 @@ const propTypes = {
     }).isRequired,
 
     /** User's private personal details */
-    currentUserPersonalDetails: PropTypes.shape({
+    privatePersonalDetails: PropTypes.shape({
         /** User's home address */
         address: PropTypes.shape({
             state: PropTypes.string,
         }),
-    }).isRequired,
+    }),
 
     ...withLocalizePropTypes,
+};
+
+const defaultProps = {
+    privatePersonalDetails: {
+        address: {
+            state: '',
+        },
+    },
 };
 
 const greenCheckmark = {src: Expensicons.Checkmark, color: themeColors.success};
@@ -46,7 +55,7 @@ function StateSelectorPage(props) {
     const [searchValue, setSearchValue] = useState('');
     const translate = props.translate;
     const route = props.route;
-    const currentCountryState = lodashGet(props.privatePersonalDetails, 'address.address.state') || route.params.stateISO;
+    const currentCountryState = route.params.stateISO || lodashGet(props.privatePersonalDetails, 'address.state');
 
     const countryStates = useMemo(() => _.map(translate('allStates'), state => ({
         value: state.stateISO,
@@ -93,6 +102,14 @@ function StateSelectorPage(props) {
 }
 
 StateSelectorPage.propTypes = propTypes;
+StateSelectorPage.defaultProps = defaultProps;
 StateSelectorPage.displayName = 'StateSelectorPage';
 
-export default compose(withLocalize, withCurrentUserPersonalDetails)(StateSelectorPage);
+export default compose(
+    withLocalize,
+    withOnyx({
+        privatePersonalDetails: {
+            key: ONYXKEYS.PRIVATE_PERSONAL_DETAILS,
+        },
+    }),
+)(StateSelectorPage);

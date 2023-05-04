@@ -5,6 +5,8 @@ import React, {
 import {View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import PropTypes from 'prop-types';
+import compose from '../libs/compose';
+import withNavigation from './withNavigation';
 import styles from '../styles/styles';
 import withLocalize, {withLocalizePropTypes} from './withLocalize';
 import MenuItemWithTopDescription from './MenuItemWithTopDescription';
@@ -36,8 +38,8 @@ function BaseStatePicker(props) {
     const stateISO = props.stateISO;
     const [stateTitle, setStateTitle] = useState(stateISO);
     const paramStateISO = lodashGet(route, 'params.stateISO');
+    const navigation = props.navigation;
     const onInputChange = props.onInputChange;
-    const selectedStateISO = props.selectedStateISO;
     const defaultValue = props.defaultValue;
     const translate = props.translate;
 
@@ -50,19 +52,14 @@ function BaseStatePicker(props) {
 
         // Needed to call onInputChange, so Form can update the validation and values
         onInputChange(paramStateISO);
-    },
-    [paramStateISO, stateTitle, onInputChange]);
 
-    useEffect(() => {
-        if (!selectedStateISO) {
-            return;
-        }
-        setStateTitle(selectedStateISO);
-    }, [selectedStateISO]);
+        navigation.setParams({stateISO: null});
+    },
+    [paramStateISO, stateTitle, onInputChange, navigation]);
 
     const navigateToCountrySelector = useCallback(() => {
-        Navigation.navigate(ROUTES.getUsaStateSelectionRoute(paramStateISO || stateISO, Navigation.getActiveRoute()));
-    }, [stateISO, paramStateISO]);
+        Navigation.navigate(ROUTES.getUsaStateSelectionRoute(stateTitle || stateISO, Navigation.getActiveRoute()));
+    }, [stateTitle, stateISO]);
 
     const title = useMemo(() => {
         if (!stateTitle) {
@@ -102,4 +99,4 @@ const StatePicker = React.forwardRef((props, ref) => (
 
 StatePicker.displayName = 'StatePicker';
 
-export default withLocalize(StatePicker);
+export default compose(withLocalize, withNavigation)(StatePicker);
