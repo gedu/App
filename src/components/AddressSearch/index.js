@@ -181,7 +181,6 @@ const AddressSearch = (props) => {
         }
 
         if (props.onStateChange) {
-            console.log('onStateChange', isUS ? state : longStateName, isUS);
             props.onStateChange(isUS ? state : longStateName, isUS);
         }
 

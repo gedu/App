@@ -77,10 +77,10 @@ class AddressPage extends Component {
     componentDidUpdate(prevProps) {
         const prevCountryISO = lodashGet(prevProps.route, 'params.countryISO');
         const currentCountryISO = lodashGet(this.props.route, 'params.countryISO');
-        console.log('prevCountryISO', prevCountryISO, ' -> currentCountryISO', currentCountryISO);
+
         if (currentCountryISO && prevCountryISO !== currentCountryISO) {
-            console.log('onCountryUpdate', currentCountryISO);
             this.onCountryUpdate(currentCountryISO);
+            this.props.navigation.setParams({countryISO: null});
         }
     }
 
@@ -225,7 +225,8 @@ class AddressPage extends Component {
                             <StatePicker
                                 stateISO={address.state}
                                 inputID="state"
-                                defaultValue={address.state || this.state.countryState}
+                                defaultValue={address.state || ''}
+                                selectedStateISO={this.state.countryState}
                             />
                         ) : (
                             <TextInput

@@ -60,7 +60,6 @@ function BaseCountryPicker(props) {
                 title={countryTitle.current.title}
                 description={props.translate('common.country')}
                 onPress={navigateToCountrySelector}
-                onValueChange={(newValue) => { console.log('2>>>onValueChange', newValue); }}
 
             />
             <FormHelpMessage message={props.errorText} />

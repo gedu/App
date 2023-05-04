@@ -1,5 +1,7 @@
 import lodashGet from 'lodash/get';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {
+    useState, useEffect, useCallback, useMemo,
+} from 'react';
 import {View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import PropTypes from 'prop-types';
@@ -17,42 +19,62 @@ const propTypes = {
     /** Error text to display */
     errorText: PropTypes.string,
 
+    /** Default value to display */
+    defaultValue: PropTypes.string,
+
     ...withLocalizePropTypes,
 };
 
 const defaultProps = {
     stateISO: '',
     errorText: '',
+    defaultValue: '',
 };
 
 function BaseStatePicker(props) {
     const route = useRoute();
-    const [stateTitle, setStateTitle] = useState('');
-    const selectedStateName = lodashGet(route, 'params.stateName');
-    const selectedStateISO = lodashGet(route, 'params.stateISO');
     const stateISO = props.stateISO;
+    const [stateTitle, setStateTitle] = useState(stateISO);
+    const paramStateISO = lodashGet(route, 'params.stateISO');
     const onInputChange = props.onInputChange;
+    const selectedStateISO = props.selectedStateISO;
     const defaultValue = props.defaultValue;
+    const translate = props.translate;
 
     useEffect(() => {
-        if (!selectedStateName || selectedStateName === stateTitle) {
+        if (!paramStateISO || paramStateISO === stateTitle) {
             return;
         }
 
-        setStateTitle(selectedStateName || stateISO);
+        setStateTitle(paramStateISO);
 
         // Needed to call onInputChange, so Form can update the validation and values
-        onInputChange(selectedStateISO);
+        onInputChange(paramStateISO);
     },
-    [stateISO, selectedStateName, stateTitle, onInputChange, selectedStateISO]);
+    [paramStateISO, stateTitle, onInputChange]);
 
     useEffect(() => {
-        console.log('stateDefault use effect: ', defaultValue);
-    }, [defaultValue]);
+        if (!selectedStateISO) {
+            return;
+        }
+        setStateTitle(selectedStateISO);
+    }, [selectedStateISO]);
 
     const navigateToCountrySelector = useCallback(() => {
-        Navigation.navigate(ROUTES.getUsaStateSelectionRoute(selectedStateName || stateISO, Navigation.getActiveRoute()));
-    }, [stateISO, selectedStateName]);
+        Navigation.navigate(ROUTES.getUsaStateSelectionRoute(paramStateISO || stateISO, Navigation.getActiveRoute()));
+    }, [stateISO, paramStateISO]);
+
+    const title = useMemo(() => {
+        if (!stateTitle) {
+            return defaultValue;
+        }
+        const allStates = translate('allStates');
+        if (allStates[stateTitle]) {
+            return allStates[stateTitle].stateName;
+        }
+
+        return stateTitle;
+    }, [translate, stateTitle, defaultValue]);
 
     return (
         <View>
@@ -60,7 +82,7 @@ function BaseStatePicker(props) {
                 ref={props.forwardedRef}
                 wrapperStyle={styles.ph0}
                 shouldShowRightIcon
-                title={stateTitle || defaultValue}
+                title={title}
                 description={props.translate('common.state')}
                 onPress={navigateToCountrySelector}
             />

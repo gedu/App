@@ -56,7 +56,7 @@ function StateSelectorPage(props) {
     })), [translate, currentCountryState]);
 
     const updateCountryState = useCallback((selectedState) => {
-        Navigation.navigate(`${route.params.backTo}?stateName=${selectedState.text}&stateISO=${selectedState.value}`);
+        Navigation.navigate(`${route.params.backTo}?stateISO=${selectedState.value}`);
     }, [route]);
 
     const filteredCountryStates = filterCountryStates(searchValue, countryStates);
