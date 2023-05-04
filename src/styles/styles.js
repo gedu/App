@@ -3109,6 +3109,10 @@ const styles = {
     contextMenuItemPopoverMaxWidth: {
         maxWidth: 375,
     },
+    formSpaceVertical: {
+        height: 20,
+        width: 1,
+    },
 };
 
 export default styles;

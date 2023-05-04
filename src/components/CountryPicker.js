@@ -55,12 +55,11 @@ function BaseCountryPicker(props) {
         <View>
             <MenuItemWithTopDescription
                 ref={props.forwardedRef}
-                wrapperStyle={styles.ph0}
+                wrapperStyle={styles.p0}
                 shouldShowRightIcon
                 title={countryTitle.current.title}
                 description={props.translate('common.country')}
                 onPress={navigateToCountrySelector}
-
             />
             <FormHelpMessage message={props.errorText} />
         </View>

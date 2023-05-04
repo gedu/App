@@ -346,7 +346,7 @@ class BaseTextInput extends Component {
                         </TouchableWithoutFeedback>
                     </View>
                     {!_.isEmpty(inputHelpText) && (
-                        <FormHelpMessage isError={!_.isEmpty(this.props.errorText)} message={inputHelpText} />
+                        <FormHelpMessage style={this.props.hintContainerStyle} isError={!_.isEmpty(this.props.errorText)} message={inputHelpText} />
                     )}
                 </View>
                 {/*
