@@ -296,7 +296,6 @@ class Form extends React.Component {
                     // the user are focusing a TextInput and proceeds to toggle a CheckBox in
                     // web and mobile web platforms.
                     setTimeout(() => {
-                        console.log('onBlur: ', inputID, this.state.inputValues[inputID]);
                         this.setTouchedInput(inputID);
                         this.validate(this.state.inputValues);
                     }, 200);
@@ -307,7 +306,7 @@ class Form extends React.Component {
                 },
                 onInputChange: (value, key) => {
                     const inputKey = key || inputID;
-                    console.log('onInputChange: ', inputKey, value);
+
                     this.setState(prevState => ({
                         inputValues: {
                             ...prevState.inputValues,
@@ -320,7 +319,6 @@ class Form extends React.Component {
                     }
 
                     if (child.props.onValueChange) {
-                        console.log('onValueChange');
                         child.props.onValueChange(value);
                     }
                 },
