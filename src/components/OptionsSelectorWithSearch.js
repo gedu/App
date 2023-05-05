@@ -40,8 +40,6 @@ const propTypes = {
         /** Key to use for the option in the list */
         keyForList: PropTypes.string.isRequired,
 
-        /** Icon to display next to the option */
-        customIcon: PropTypes.bool,
     })).isRequired,
 
     ...withLocalizePropTypes,
