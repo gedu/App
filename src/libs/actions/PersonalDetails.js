@@ -96,6 +96,13 @@ function getCountryISO(countryName) {
     return _.findKey(CONST.ALL_COUNTRIES, country => country === countryName) || '';
 }
 
+/**
+ * Returns the name of the country associated with the provided ISO code.
+ * If the provided code is invalid, an empty string is returned.
+ *
+ * @param {string} countryISO The ISO code of the country to look up.
+ * @returns {string} The name of the country associated with the provided ISO code.
+ */
 function getCountryNameBy(countryISO) {
     if (_.isEmpty(countryISO) || countryISO.length !== 2) {
         return countryISO;

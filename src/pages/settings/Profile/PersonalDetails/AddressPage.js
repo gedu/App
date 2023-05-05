@@ -52,10 +52,6 @@ const defaultProps = {
     },
 };
 
-function FormSpace() {
-    return <View style={styles.formSpaceVertical} />;
-}
-
 class AddressPage extends Component {
     constructor(props) {
         super(props);
@@ -96,7 +92,6 @@ class AddressPage extends Component {
             isUsaForm: newCountry === CONST.COUNTRY.US,
             zipFormat: this.props.translate('common.zipCodeExampleFormat', {zipSampleFormat}),
             country: newCountry,
-
         });
     }
 
@@ -207,24 +202,21 @@ class AddressPage extends Component {
                             maxInputLength={CONST.FORM_CHARACTER_LIMIT}
                         />
                     </View>
-                    <FormSpace />
-
+                    <View style={styles.formSpaceVertical} />
                     <TextInput
                         inputID="addressLine2"
                         label={this.props.translate('common.addressLine', {lineNumber: 2})}
                         defaultValue={street2 || ''}
                         maxLength={CONST.FORM_CHARACTER_LIMIT}
                     />
-                    <FormSpace />
-
+                    <View style={styles.formSpaceVertical} />
                     <CountryPicker
                         inputID="country"
                         selectedCountryISO={this.state.country}
                         countryISO={address.country}
                         defaultValue={PersonalDetails.getCountryISO(address.country)}
                     />
-                    <FormSpace />
-
+                    <View style={styles.formSpaceVertical} />
                     {this.state.isUsaForm ? (
                         <StatePicker
                             stateISO={address.state}
@@ -232,25 +224,21 @@ class AddressPage extends Component {
                             defaultValue={address.state || ''}
                         />
                     ) : (
-
                         <TextInput
                             inputID="state"
                             label={this.props.translate('common.stateOrProvince')}
                             defaultValue={address.state || ''}
                             maxLength={CONST.FORM_CHARACTER_LIMIT}
                         />
-
                     )}
-                    <FormSpace />
-
+                    <View style={styles.formSpaceVertical} />
                     <TextInput
                         inputID="city"
                         label={this.props.translate('common.city')}
                         defaultValue={address.city || ''}
                         maxLength={CONST.FORM_CHARACTER_LIMIT}
                     />
-                    <FormSpace />
-
+                    <View style={styles.formSpaceVertical} />
                     <TextInput
                         inputID="zipPostCode"
                         label={this.props.translate('common.zipPostCode')}

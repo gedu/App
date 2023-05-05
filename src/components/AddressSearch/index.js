@@ -48,8 +48,10 @@ const propTypes = {
     /** A callback function when the value of this field has changed */
     onInputChange: PropTypes.func.isRequired,
 
+    /** A callback when a new country has changed */
     onCountryChange: PropTypes.func,
 
+    /** A callback when a new state has changed */
     onStateChange: PropTypes.func,
 
     /** Customize the TextInput container */
