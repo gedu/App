@@ -6,15 +6,14 @@ const propTypes = {
     ...menuItemPropTypes,
 };
 
-const MenuItemWithTopDescription = React.forwardRef((props, ref) => (
+const MenuItemWithTopDescription = (props) => (
     <MenuItem
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
-        ref={ref}
         shouldShowBasicTitle
         shouldShowDescriptionOnTop
     />
-));
+);
 
 MenuItemWithTopDescription.propTypes = propTypes;
 MenuItemWithTopDescription.displayName = 'MenuItemWithTopDescription';
