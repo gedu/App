@@ -650,21 +650,25 @@ const YearPickerStackNavigator = createModalStackNavigator([
     },
 ]);
 
-const CountrySelectorStackNavigator = createModalStackNavigator([{
-    getComponent: () => {
-        const CountrySelectorPage = require('../../../pages/CountrySelectorPage').default;
-        return CountrySelectorPage;
+const CountrySelectorStackNavigator = createModalStackNavigator([
+    {
+        getComponent: () => {
+            const CountrySelectorPage = require('../../../pages/CountrySelectorPage').default;
+            return CountrySelectorPage;
+        },
+        name: 'CountrySelector_Root',
     },
-    name: 'CountrySelector_Root',
-}]);
+]);
 
-const UsaStateSelectorStackNavigator = createModalStackNavigator([{
-    getComponent: () => {
-        const usaStateSelectorPage = require('../../../pages/StateSelectorPage').default;
-        return usaStateSelectorPage;
+const UsaStateSelectorStackNavigator = createModalStackNavigator([
+    {
+        getComponent: () => {
+            const usaStateSelectorPage = require('../../../pages/StateSelectorPage').default;
+            return usaStateSelectorPage;
+        },
+        name: 'CountrySelector_Root',
     },
-    name: 'CountrySelector_Root',
-}]);
+]);
 
 export {
     IOUBillStackNavigator,

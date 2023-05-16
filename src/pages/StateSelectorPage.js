@@ -40,16 +40,23 @@ function StateSelectorPage(props) {
     const route = props.route;
     const currentCountryState = route.params.stateISO || lodashGet(props.privatePersonalDetails, 'address.state');
 
-    const countryStates = useMemo(() => _.map(translate('allStates'), state => ({
-        value: state.stateISO,
-        keyForList: state.stateISO,
-        text: state.stateName,
-        customIcon: currentCountryState === state.stateISO ? greenCheckmark : undefined,
-    })), [translate, currentCountryState]);
+    const countryStates = useMemo(
+        () =>
+            _.map(translate('allStates'), (state) => ({
+                value: state.stateISO,
+                keyForList: state.stateISO,
+                text: state.stateName,
+                customIcon: currentCountryState === state.stateISO ? greenCheckmark : undefined,
+            })),
+        [translate, currentCountryState],
+    );
 
-    const updateCountryState = useCallback((selectedState) => {
-        Navigation.navigate(`${route.params.backTo}?stateISO=${selectedState.value}`);
-    }, [route]);
+    const updateCountryState = useCallback(
+        (selectedState) => {
+            Navigation.navigate(`${route.params.backTo}?stateISO=${selectedState.value}`);
+        },
+        [route],
+    );
 
     return (
         <OptionsSelectorWithSearch

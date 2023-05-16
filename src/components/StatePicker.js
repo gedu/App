@@ -1,7 +1,5 @@
 import lodashGet from 'lodash/get';
-import React, {
-    useState, useEffect, useCallback, useMemo,
-} from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import {View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import PropTypes from 'prop-types';
@@ -54,8 +52,7 @@ function BaseStatePicker(props) {
         onInputChange(paramStateISO);
 
         navigation.setParams({stateISO: null});
-    },
-    [paramStateISO, stateTitle, onInputChange, navigation]);
+    }, [paramStateISO, stateTitle, onInputChange, navigation]);
 
     const navigateToCountrySelector = useCallback(() => {
         Navigation.navigate(ROUTES.getUsaStateSelectionRoute(stateTitle || stateISO, Navigation.getActiveRoute()));
@@ -85,7 +82,6 @@ function BaseStatePicker(props) {
             />
             <FormHelpMessage message={props.errorText} />
         </View>
-
     );
 }
 
@@ -93,8 +89,11 @@ BaseStatePicker.propTypes = propTypes;
 BaseStatePicker.defaultProps = defaultProps;
 
 const StatePicker = React.forwardRef((props, ref) => (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <BaseStatePicker {...props} forwardedRef={ref} />
+    <BaseStatePicker
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...props}
+        forwardedRef={ref}
+    />
 ));
 
 StatePicker.displayName = 'StatePicker';

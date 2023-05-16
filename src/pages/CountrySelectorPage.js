@@ -40,16 +40,23 @@ function CountrySelectorPage(props) {
     const route = props.route;
     const currentCountry = route.params.countryISO || lodashGet(props.privatePersonalDetails, 'address.country');
 
-    const countries = useMemo(() => _.map(translate('allCountries'), (countryName, countryISO) => ({
-        value: countryISO,
-        keyForList: countryISO,
-        text: countryName,
-        customIcon: currentCountry === countryISO ? greenCheckmark : undefined,
-    })), [translate, currentCountry]);
+    const countries = useMemo(
+        () =>
+            _.map(translate('allCountries'), (countryName, countryISO) => ({
+                value: countryISO,
+                keyForList: countryISO,
+                text: countryName,
+                customIcon: currentCountry === countryISO ? greenCheckmark : undefined,
+            })),
+        [translate, currentCountry],
+    );
 
-    const updateCountry = useCallback((selectedCountry) => {
-        Navigation.navigate(`${route.params.backTo}?countryISO=${selectedCountry.value}`);
-    }, [route]);
+    const updateCountry = useCallback(
+        (selectedCountry) => {
+            Navigation.navigate(`${route.params.backTo}?countryISO=${selectedCountry.value}`);
+        },
+        [route],
+    );
 
     return (
         <OptionsSelectorWithSearch
@@ -68,8 +75,11 @@ CountrySelectorPage.propTypes = propTypes;
 CountrySelectorPage.defaultProps = defaultProps;
 CountrySelectorPage.displayName = 'CountrySelectorPage';
 
-export default compose(withLocalize, withOnyx({
-    privatePersonalDetails: {
-        key: ONYXKEYS.PRIVATE_PERSONAL_DETAILS,
-    },
-}))(CountrySelectorPage);
+export default compose(
+    withLocalize,
+    withOnyx({
+        privatePersonalDetails: {
+            key: ONYXKEYS.PRIVATE_PERSONAL_DETAILS,
+        },
+    }),
+)(CountrySelectorPage);

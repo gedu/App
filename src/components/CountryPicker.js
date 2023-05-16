@@ -1,6 +1,4 @@
-import React, {
-    useCallback, useRef, useEffect,
-} from 'react';
+import React, {useCallback, useRef, useEffect} from 'react';
 import {View} from 'react-native';
 import PropTypes from 'prop-types';
 import styles from '../styles/styles';
@@ -44,8 +42,7 @@ function BaseCountryPicker(props) {
 
         // Needed to call onInputChange, so Form can update the validation and values
         onInputChange(countryTitle.current.iso);
-    },
-    [countryISO, selectedCountryISO, onInputChange]);
+    }, [countryISO, selectedCountryISO, onInputChange]);
 
     const navigateToCountrySelector = useCallback(() => {
         Navigation.navigate(ROUTES.getCountrySelectionRoute(selectedCountryISO || countryISO, Navigation.getActiveRoute()));
@@ -63,7 +60,6 @@ function BaseCountryPicker(props) {
             />
             <FormHelpMessage message={props.errorText} />
         </View>
-
     );
 }
 
@@ -71,8 +67,11 @@ BaseCountryPicker.propTypes = propTypes;
 BaseCountryPicker.defaultProps = defaultProps;
 
 const CountryPicker = React.forwardRef((props, ref) => (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <BaseCountryPicker {...props} forwardedRef={ref} />
+    <BaseCountryPicker
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...props}
+        forwardedRef={ref}
+    />
 ));
 
 CountryPicker.displayName = 'CountryPicker';

@@ -11,7 +11,6 @@ import OptionsSelector from './OptionsSelector';
 import styles from '../styles/styles';
 
 const propTypes = {
-
     /** Title of the page */
     title: PropTypes.string.isRequired,
 
@@ -30,17 +29,18 @@ const propTypes = {
     /** Initial option to display as selected */
     initialOption: PropTypes.string,
 
-    data: PropTypes.arrayOf(PropTypes.shape({
-        /** Text to display for the option */
-        text: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(
+        PropTypes.shape({
+            /** Text to display for the option */
+            text: PropTypes.string.isRequired,
 
-        /** Value of the option */
-        value: PropTypes.string.isRequired,
+            /** Value of the option */
+            value: PropTypes.string.isRequired,
 
-        /** Key to use for the option in the list */
-        keyForList: PropTypes.string.isRequired,
-
-    })).isRequired,
+            /** Key to use for the option in the list */
+            keyForList: PropTypes.string.isRequired,
+        }),
+    ).isRequired,
 
     ...withLocalizePropTypes,
 };
@@ -57,7 +57,7 @@ function filterOptions(searchValue, countries) {
         return [];
     }
 
-    return _.filter(countries, country => country.text.toLowerCase().includes(searchValue.toLowerCase()));
+    return _.filter(countries, (country) => country.text.toLowerCase().includes(searchValue.toLowerCase()));
 }
 
 function CountrySelectorPage(props) {
@@ -102,9 +102,6 @@ CountrySelectorPage.propTypes = propTypes;
 CountrySelectorPage.defaultProps = defaultProps;
 CountrySelectorPage.displayName = 'CountrySelectorPage';
 
-export {
-    greenCheckmark,
-};
+export {greenCheckmark};
 
 export default withLocalize(CountrySelectorPage);
-
