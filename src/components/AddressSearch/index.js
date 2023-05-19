@@ -127,6 +127,7 @@ const AddressSearch = (props) => {
             postal_town: postalTown,
             postal_code: zipCode,
             administrative_area_level_1: state,
+            administrative_area_level_2: stateFallback,
             country,
         } = GooglePlacesUtils.getAddressComponents(addressComponents, {
             street_number: 'long_name',
@@ -137,6 +138,7 @@ const AddressSearch = (props) => {
             postal_town: 'long_name',
             postal_code: 'long_name',
             administrative_area_level_1: 'short_name',
+            administrative_area_level_2: 'long_name',
             country: 'short_name',
         });
 
@@ -179,6 +181,12 @@ const AddressSearch = (props) => {
         const isUS = country === CONST.COUNTRY.US;
         if (!isUS) {
             values.state = longStateName;
+        }
+
+        // UK addresses return countries (e.g. England) in the state field (administrative_area_level_1)
+        // So we use a secondary field (administrative_area_level_2) as a fallback
+        if (country === CONST.COUNTRY.GB) {
+            values.state = stateFallback;
         }
 
         if (props.onStateChange) {
