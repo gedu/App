@@ -1,5 +1,5 @@
 import lodashGet from 'lodash/get';
-import React, {useState, useEffect, useCallback, useMemo} from 'react';
+import React, {useState, useEffect, useCallback, useMemo, useImperativeHandle} from 'react';
 import {View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import PropTypes from 'prop-types';
@@ -59,10 +59,10 @@ function BaseStatePicker(props) {
     }, [stateTitle, stateISO]);
 
     const title = useMemo(() => {
-        if (!stateTitle) {
-            return defaultValue;
-        }
         const allStates = translate('allStates');
+        if (!stateTitle) {
+            return defaultValue ? allStates[defaultValue].stateName : '';
+        }
         if (allStates[stateTitle]) {
             return allStates[stateTitle].stateName;
         }
@@ -74,7 +74,7 @@ function BaseStatePicker(props) {
         <View>
             <MenuItemWithTopDescription
                 ref={props.forwardedRef}
-                wrapperStyle={styles.p0}
+                wrapperStyle={styles.pv1}
                 shouldShowRightIcon
                 title={title}
                 description={props.translate('common.state')}

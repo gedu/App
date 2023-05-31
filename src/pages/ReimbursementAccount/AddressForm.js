@@ -118,12 +118,13 @@ const AddressForm = (props) => (
             errorText={props.errors.city ? props.translate('bankAccount.error.addressCity') : ''}
             containerStyles={[styles.mt4]}
         />
-        <View style={styles.mt4}>
+        <View style={[styles.mt4, styles.mhn5]}>
             <StatePicker
                 inputID={props.inputKeys.state}
                 shouldSaveDraft={props.shouldSaveDraft}
                 value={props.values.state}
                 defaultValue={props.defaultValues.state}
+                shouldUseDefaultValue
                 onInputChange={(value) => props.onFieldChange({state: value})}
                 errorText={props.errors.state ? props.translate('bankAccount.error.addressState') : ''}
             />

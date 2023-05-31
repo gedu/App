@@ -164,7 +164,7 @@ class AddressPage extends Component {
                     onCloseButtonPress={() => Navigation.dismissModal(true)}
                 />
                 <Form
-                    style={[styles.flexGrow1, styles.ph5]}
+                    style={[styles.flexGrow1, styles.mh5]}
                     formID={ONYXKEYS.FORMS.HOME_ADDRESS_FORM}
                     validate={this.validate}
                     onSubmit={this.updateAddress}
@@ -198,19 +198,23 @@ class AddressPage extends Component {
                         maxLength={CONST.FORM_CHARACTER_LIMIT}
                     />
                     <View style={styles.formSpaceVertical} />
-                    <CountryPicker
-                        inputID="country"
-                        selectedCountryISO={this.state.country}
-                        countryISO={address.country}
-                        defaultValue={PersonalDetails.getCountryISO(address.country)}
-                    />
+                    <View style={styles.mhn5}>
+                        <CountryPicker
+                            inputID="country"
+                            selectedCountryISO={this.state.country}
+                            countryISO={address.country}
+                            defaultValue={PersonalDetails.getCountryISO(address.country)}
+                        />
+                    </View>
                     <View style={styles.formSpaceVertical} />
                     {this.state.isUsaForm ? (
-                        <StatePicker
-                            stateISO={address.state}
-                            inputID="state"
-                            defaultValue={address.state || ''}
-                        />
+                        <View style={styles.mhn5}>
+                            <StatePicker
+                                stateISO={address.state}
+                                inputID="state"
+                                defaultValue={address.state || ''}
+                            />
+                        </View>
                     ) : (
                         <TextInput
                             inputID="state"
