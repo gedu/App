@@ -206,7 +206,6 @@ class AddressPage extends Component {
                             defaultValue={PersonalDetails.getCountryISO(address.country)}
                         />
                     </View>
-                    <View style={styles.formSpaceVertical} />
                     {this.state.isUsaForm ? (
                         <View style={styles.mhn5}>
                             <StatePicker
@@ -223,7 +222,6 @@ class AddressPage extends Component {
                             maxLength={CONST.FORM_CHARACTER_LIMIT}
                         />
                     )}
-                    <View style={styles.formSpaceVertical} />
                     <TextInput
                         inputID="city"
                         label={this.props.translate('common.city')}

@@ -74,7 +74,6 @@ function BaseStatePicker(props) {
         <View>
             <MenuItemWithTopDescription
                 ref={props.forwardedRef}
-                wrapperStyle={styles.pv1}
                 shouldShowRightIcon
                 title={title}
                 description={props.translate('common.state')}
