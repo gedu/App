@@ -1,11 +1,11 @@
 import lodashGet from 'lodash/get';
-import React, {useState, useEffect, useCallback, useMemo, useImperativeHandle} from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import {View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import compose from '../libs/compose';
 import withNavigation from './withNavigation';
-import styles from '../styles/styles';
+import sizes from '../styles/variables';
 import withLocalize, {withLocalizePropTypes} from './withLocalize';
 import MenuItemWithTopDescription from './MenuItemWithTopDescription';
 import Navigation from '../libs/Navigation/Navigation';
@@ -69,6 +69,7 @@ function BaseStatePicker(props) {
 
         return stateTitle;
     }, [translate, stateTitle, defaultValue]);
+    const descStyle = title.length === 0 ? {fontSize: sizes.fontSizeNormal} : null;
 
     return (
         <View>
@@ -77,6 +78,7 @@ function BaseStatePicker(props) {
                 shouldShowRightIcon
                 title={title}
                 description={props.translate('common.state')}
+                descriptionTextStyle={descStyle}
                 onPress={navigateToCountrySelector}
             />
             <FormHelpMessage message={props.errorText} />

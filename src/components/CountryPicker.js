@@ -1,7 +1,7 @@
 import React, {useCallback, useRef, useEffect} from 'react';
 import {View} from 'react-native';
 import PropTypes from 'prop-types';
-import styles from '../styles/styles';
+import sizes from '../styles/variables';
 import withLocalize, {withLocalizePropTypes} from './withLocalize';
 import MenuItemWithTopDescription from './MenuItemWithTopDescription';
 import * as PersonalDetails from '../libs/actions/PersonalDetails';
@@ -47,13 +47,14 @@ function BaseCountryPicker(props) {
     const navigateToCountrySelector = useCallback(() => {
         Navigation.navigate(ROUTES.getCountrySelectionRoute(selectedCountryISO || countryISO, Navigation.getActiveRoute()));
     }, [countryISO, selectedCountryISO]);
-
+    const descStyle = countryTitle.current.title.length === 0 ? {fontSize: sizes.fontSizeNormal} : null;
     return (
         <View>
             <MenuItemWithTopDescription
                 ref={props.forwardedRef}
                 shouldShowRightIcon
                 title={countryTitle.current.title}
+                descriptionTextStyle={descStyle}
                 description={props.translate('common.country')}
                 onPress={navigateToCountrySelector}
             />
