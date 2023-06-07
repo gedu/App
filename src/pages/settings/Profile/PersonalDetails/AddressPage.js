@@ -1,6 +1,6 @@
 import lodashGet from 'lodash/get';
 import _ from 'underscore';
-import React, {useState, useCallback, useRef, useEffect} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {View} from 'react-native';
 import {CONST as COMMON_CONST} from 'expensify-common/lib/CONST';

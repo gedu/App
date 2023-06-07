@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import withLocalize, {withLocalizePropTypes} from './withLocalize';
 import ScreenWrapper from './ScreenWrapper';
 import HeaderWithBackButton from './HeaderWithBackButton';
-import Navigation from '../libs/Navigation/Navigation';
 import * as Expensicons from './Icon/Expensicons';
 import themeColors from '../styles/themes/default';
 import OptionsSelector from './OptionsSelector';
