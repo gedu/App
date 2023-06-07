@@ -3,6 +3,7 @@ import lodashGet from 'lodash/get';
 import React, {useCallback, useMemo} from 'react';
 import PropTypes from 'prop-types';
 import {withOnyx} from 'react-native-onyx';
+import ROUTES from '../ROUTES';
 import withLocalize, {withLocalizePropTypes} from '../components/withLocalize';
 import Navigation from '../libs/Navigation/Navigation';
 import compose from '../libs/compose';
@@ -38,7 +39,7 @@ const defaultProps = {
 function StateSelectorPage(props) {
     const translate = props.translate;
     const route = props.route;
-    const currentCountryState = route.params.stateISO || lodashGet(props.privatePersonalDetails, 'address.state');
+    const currentCountryState = !_.isEmpty(route.params) ? route.params.stateISO : lodashGet(props.privatePersonalDetails, 'address.state');
 
     const countryStates = useMemo(
         () =>
@@ -51,17 +52,14 @@ function StateSelectorPage(props) {
         [translate, currentCountryState],
     );
 
-    const updateCountryState = useCallback(
-        (selectedState) => {
-            Navigation.navigate(`${route.params.backTo}?stateISO=${selectedState.value}`);
-        },
-        [route],
-    );
+    const updateCountryState = useCallback((selectedState) => {
+        Navigation.goBack(`${ROUTES.SETTINGS_PERSONAL_DETAILS_ADDRESS}?stateISO=${selectedState.value}`, true);
+    }, []);
 
     return (
         <OptionsSelectorWithSearch
             title={translate('common.state')}
-            onBackButtonPress={() => Navigation.navigate(`${route.params.backTo}`)}
+            onBackButtonPress={() => Navigation.goBack(`${route.params.backTo}`)}
             textSearchLabel={translate('common.state')}
             placeholder={translate('pronounsPage.placeholderText')}
             onSelectRow={updateCountryState}

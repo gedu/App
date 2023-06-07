@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import withLocalize, {withLocalizePropTypes} from './withLocalize';
 import ScreenWrapper from './ScreenWrapper';
-import HeaderWithCloseButton from './HeaderWithCloseButton';
+import HeaderWithBackButton from './HeaderWithBackButton';
 import Navigation from '../libs/Navigation/Navigation';
 import * as Expensicons from './Icon/Expensicons';
 import themeColors from '../styles/themes/default';
@@ -72,11 +72,10 @@ function CountrySelectorPage(props) {
         <ScreenWrapper includeSafeAreaPaddingBottom={false}>
             {({safeAreaPaddingBottomStyle}) => (
                 <>
-                    <HeaderWithCloseButton
+                    <HeaderWithBackButton
                         title={props.title}
                         shouldShowBackButton
                         onBackButtonPress={props.onBackButtonPress}
-                        onCloseButtonPress={() => Navigation.dismissModal(true)}
                     />
                     <OptionsSelector
                         textInputLabel={props.textSearchLabel}

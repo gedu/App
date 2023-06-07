@@ -3,6 +3,7 @@ import lodashGet from 'lodash/get';
 import React, {useCallback, useMemo} from 'react';
 import PropTypes from 'prop-types';
 import {withOnyx} from 'react-native-onyx';
+import ROUTES from '../ROUTES';
 import withLocalize, {withLocalizePropTypes} from '../components/withLocalize';
 import Navigation from '../libs/Navigation/Navigation';
 import compose from '../libs/compose';
@@ -51,18 +52,15 @@ function CountrySelectorPage(props) {
         [translate, currentCountry],
     );
 
-    const updateCountry = useCallback(
-        (selectedCountry) => {
-            Navigation.navigate(`${route.params.backTo}?countryISO=${selectedCountry.value}`);
-        },
-        [route],
-    );
+    const updateCountry = useCallback((selectedCountry) => {
+        Navigation.goBack(`${ROUTES.SETTINGS_PERSONAL_DETAILS_ADDRESS}?countryISO=${selectedCountry.value}`, true);
+    }, []);
 
     return (
         <OptionsSelectorWithSearch
             data={countries}
             title={translate('common.country')}
-            onBackButtonPress={() => Navigation.navigate(`${route.params.backTo}`)}
+            onBackButtonPress={() => Navigation.goBack(`${route.params.backTo}`)}
             textSearchLabel={translate('common.country')}
             placeholder={translate('pronounsPage.placeholderText')}
             onSelectRow={updateCountry}

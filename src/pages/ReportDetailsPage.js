@@ -10,7 +10,7 @@ import withLocalize, {withLocalizePropTypes} from '../components/withLocalize';
 import ONYXKEYS from '../ONYXKEYS';
 import ScreenWrapper from '../components/ScreenWrapper';
 import Navigation from '../libs/Navigation/Navigation';
-import HeaderWithCloseButton from '../components/HeaderWithCloseButton';
+import HeaderWithBackButton from '../components/HeaderWithBackButton';
 import styles from '../styles/styles';
 import DisplayNames from '../components/DisplayNames';
 import * as OptionsListUtils from '../libs/OptionsListUtils';
@@ -125,52 +125,49 @@ const ReportDetailsPage = (props) => {
         return ReportUtils.getDisplayNamesWithTooltips(OptionsListUtils.getPersonalDetailsForLogins(participants, props.personalDetails), hasMultipleParticipants);
     }, [participants, props.personalDetails]);
 
-    const chatRoomSubtitleText = (
+    const chatRoomSubtitleText = chatRoomSubtitle ? (
         <Text
-            style={[styles.sidebarLinkText, styles.optionAlternateText, styles.textLabelSupporting, styles.mb2, styles.pre]}
+            style={[styles.sidebarLinkText, styles.textLabelSupporting, styles.pre, styles.mt1]}
             numberOfLines={1}
         >
             {chatRoomSubtitle}
         </Text>
-    );
+    ) : null;
 
     return (
         <ScreenWrapper>
             <FullPageNotFoundView shouldShow={_.isEmpty(props.report)}>
-                <HeaderWithCloseButton
+                <HeaderWithBackButton
                     title={props.translate('common.details')}
                     onBackButtonPress={() => Navigation.goBack()}
-                    onCloseButtonPress={() => Navigation.dismissModal()}
                 />
                 <ScrollView style={[styles.flex1]}>
-                    <View style={[styles.m5]}>
-                        <View style={styles.reportDetailsTitleContainer}>
-                            <View style={styles.mb4}>
-                                <RoomHeaderAvatars icons={ReportUtils.getIcons(props.report, props.personalDetails, props.policies)} />
+                    <View style={styles.reportDetailsTitleContainer}>
+                        <View style={styles.mb3}>
+                            <RoomHeaderAvatars icons={ReportUtils.getIcons(props.report, props.personalDetails, props.policies)} />
+                        </View>
+                        <View style={[styles.reportDetailsRoomInfo, styles.mw100]}>
+                            <View style={[styles.alignSelfCenter, styles.w100, styles.mt1]}>
+                                <DisplayNames
+                                    fullTitle={ReportUtils.getReportName(props.report)}
+                                    displayNamesWithTooltips={displayNamesWithTooltips}
+                                    tooltipEnabled
+                                    numberOfLines={1}
+                                    textStyles={[styles.textHeadline, styles.textAlignCenter, styles.pre]}
+                                    shouldUseFullTitle={isChatRoom || isPolicyExpenseChat || isThread}
+                                />
                             </View>
-                            <View style={[styles.reportDetailsRoomInfo, styles.mw100]}>
-                                <View style={[styles.alignSelfCenter, styles.w100]}>
-                                    <DisplayNames
-                                        fullTitle={ReportUtils.getReportName(props.report)}
-                                        displayNamesWithTooltips={displayNamesWithTooltips}
-                                        tooltipEnabled
-                                        numberOfLines={1}
-                                        textStyles={[styles.textHeadline, styles.mb2, styles.textAlignCenter, styles.pre]}
-                                        shouldUseFullTitle={isChatRoom || isPolicyExpenseChat || isThread}
-                                    />
-                                </View>
-                                {isPolicyAdmin ? (
-                                    <Pressable
-                                        onPress={() => {
-                                            Navigation.navigate(ROUTES.getWorkspaceInitialRoute(props.report.policyID));
-                                        }}
-                                    >
-                                        {chatRoomSubtitleText}
-                                    </Pressable>
-                                ) : (
-                                    chatRoomSubtitleText
-                                )}
-                            </View>
+                            {isPolicyAdmin ? (
+                                <Pressable
+                                    onPress={() => {
+                                        Navigation.navigate(ROUTES.getWorkspaceInitialRoute(props.report.policyID));
+                                    }}
+                                >
+                                    {chatRoomSubtitleText}
+                                </Pressable>
+                            ) : (
+                                chatRoomSubtitleText
+                            )}
                         </View>
                     </View>
                     {_.map(menuItems, (item) => {
