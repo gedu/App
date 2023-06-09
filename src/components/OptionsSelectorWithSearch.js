@@ -50,16 +50,16 @@ const defaultProps = {
 
 const greenCheckmark = {src: Expensicons.Checkmark, color: themeColors.success};
 
-function filterOptions(searchValue, countries) {
+function filterOptions(searchValue, data) {
     const trimmedSearchValue = searchValue.trim();
     if (trimmedSearchValue.length === 0) {
         return [];
     }
 
-    return _.filter(countries, (country) => country.text.toLowerCase().includes(searchValue.toLowerCase()));
+    return _.filter(data, (country) => country.text.toLowerCase().includes(searchValue.toLowerCase()));
 }
 
-function CountrySelectorPage(props) {
+function OptionsSelectorWithSearch(props) {
     const [searchValue, setSearchValue] = useState('');
     const translate = props.translate;
     const initialOption = props.initialOption;
@@ -96,10 +96,10 @@ function CountrySelectorPage(props) {
     );
 }
 
-CountrySelectorPage.propTypes = propTypes;
-CountrySelectorPage.defaultProps = defaultProps;
-CountrySelectorPage.displayName = 'CountrySelectorPage';
+OptionsSelectorWithSearch.propTypes = propTypes;
+OptionsSelectorWithSearch.defaultProps = defaultProps;
+OptionsSelectorWithSearch.displayName = 'OptionsSelectorWithSearch';
 
 export {greenCheckmark};
 
-export default withLocalize(CountrySelectorPage);
+export default withLocalize(OptionsSelectorWithSearch);
