@@ -119,7 +119,6 @@ function AddressForm(props) {
                 errorText={props.errors.city ? props.translate('bankAccount.error.addressCity') : ''}
                 containerStyles={styles.mt4}
             />
-
             <View style={[styles.mt4, styles.mhn5]}>
                 <StatePicker
                     inputID={props.inputKeys.state}
