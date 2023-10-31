@@ -1740,6 +1740,7 @@ function clearPolicyRoomNameErrors(reportID) {
  * @param {Boolean} isComposerFullSize
  */
 function setIsComposerFullSize(reportID, isComposerFullSize) {
+    console.log('SET>> setIsComposerFullSize', reportID, isComposerFullSize);
     Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT_IS_COMPOSER_FULL_SIZE}${reportID}`, isComposerFullSize);
 }
 

@@ -1,4 +1,6 @@
 import {useFocusEffect} from '@react-navigation/native';
+import {atom, useAtom} from 'jotai';
+import {atomFamily} from 'jotai/utils';
 import lodashGet from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
@@ -16,6 +18,7 @@ import ScreenWrapper from '@components/ScreenWrapper';
 import TaskHeaderActionButton from '@components/TaskHeaderActionButton';
 import withCurrentReportID, {withCurrentReportIDDefaultProps, withCurrentReportIDPropTypes} from '@components/withCurrentReportID';
 import withViewportOffsetTop from '@components/withViewportOffsetTop';
+import * as OnyxExtends from '@hooks/onyxBridge/onyxExtends';
 import useLocalize from '@hooks/useLocalize';
 import usePrevious from '@hooks/usePrevious';
 import useWindowDimensions from '@hooks/useWindowDimensions';
@@ -133,23 +136,42 @@ function getReportID(route) {
     return String(lodashGet(route, 'params.reportID', null));
 }
 
-function ReportScreen({
-    betas,
-    route,
-    report,
-    reportMetadata,
-    reportActions,
-    accountManagerReportID,
-    personalDetails,
-    markReadyForHydration,
-    policies,
-    isSidebarLoaded,
-    viewportOffsetTop,
-    isComposerFullSize,
-    errors,
-    userLeavingStatus,
-    currentReportID,
-}) {
+const reportActionsFamily = atomFamily((id) =>
+    atom((get) => {
+        const reportActions = get(OnyxExtends.reportActionsAtomFamily(id));
+        if (!reportActions) {
+            return {};
+        }
+        return ReportActionsUtils.getSortedReportActionsForDisplay(reportActions);
+    }),
+);
+const reportFamily = atomFamily((id) =>
+    atom((get) => {
+        const reports = get(OnyxExtends.reportAtomFamily(id));
+        if (!reports) {
+            return {};
+        }
+        return reportWithoutHasDraftSelector(reports);
+    }),
+);
+
+function ReportScreen({route, markReadyForHydration, viewportOffsetTop, errors, currentReportID}) {
+    const reportID = getReportID(route);
+    const [reportActions] = useAtom(reportActionsFamily(reportID));
+    const [report] = useAtom(reportFamily(reportID));
+    const [isSidebarLoaded] = useAtom(OnyxExtends.isSidebarLoadedAtom);
+    const [reportMetadata] = useAtom(OnyxExtends.reportMetadataAtomFamily(reportID));
+    const [isComposerFullSize] = useAtom(OnyxExtends.isComposerFullSizeAtomFamily(reportID));
+    const [betas] = useAtom(OnyxExtends.betasAtom);
+    const [policies] = useAtom(OnyxExtends.policiesAtom);
+    const [accountManagerReportID] = useAtom(OnyxExtends.accountManagerReportIdAtom);
+    const [personalDetails] = useAtom(OnyxExtends.personalDetailsAtom);
+    const [userLeavingStatus] = useAtom(OnyxExtends.userLeavingStatusAtom(reportID));
+
+    // const [policiesAtom] = useAtom(OnyxExtends.policiesAtom);
+    // console.log('policiesAtom: ', policiesAtom);
+    // console.log('policies: ', policies);
+
     const {translate} = useLocalize();
     const {isSmallScreenWidth} = useWindowDimensions();
 
@@ -161,7 +183,6 @@ function ReportScreen({
     const [isBannerVisible, setIsBannerVisible] = useState(true);
     const [listHeight, setListHeight] = useState(0);
 
-    const reportID = getReportID(route);
     const {addWorkspaceRoomOrChatPendingAction, addWorkspaceRoomOrChatErrors} = ReportUtils.getReportOfflinePendingActionAndErrors(report);
     const screenWrapperStyle = [styles.appContent, styles.flex1, {marginTop: viewportOffsetTop}];
 
@@ -480,55 +501,4 @@ ReportScreen.propTypes = propTypes;
 ReportScreen.defaultProps = defaultProps;
 ReportScreen.displayName = 'ReportScreen';
 
-export default compose(
-    withViewportOffsetTop,
-    withCurrentReportID,
-    withOnyx(
-        {
-            isSidebarLoaded: {
-                key: ONYXKEYS.IS_SIDEBAR_LOADED,
-            },
-            reportActions: {
-                key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${getReportID(route)}`,
-                canEvict: false,
-                selector: ReportActionsUtils.getSortedReportActionsForDisplay,
-            },
-            report: {
-                key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT}${getReportID(route)}`,
-                allowStaleData: true,
-                selector: reportWithoutHasDraftSelector,
-            },
-            reportMetadata: {
-                key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_METADATA}${getReportID(route)}`,
-                initialValue: {
-                    isLoadingInitialReportActions: true,
-                    isLoadingOlderReportActions: false,
-                    isLoadingNewerReportActions: false,
-                },
-            },
-            isComposerFullSize: {
-                key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_IS_COMPOSER_FULL_SIZE}${getReportID(route)}`,
-                initialValue: false,
-            },
-            betas: {
-                key: ONYXKEYS.BETAS,
-            },
-            policies: {
-                key: ONYXKEYS.COLLECTION.POLICY,
-                allowStaleData: true,
-            },
-            accountManagerReportID: {
-                key: ONYXKEYS.ACCOUNT_MANAGER_REPORT_ID,
-                initialValue: null,
-            },
-            personalDetails: {
-                key: ONYXKEYS.PERSONAL_DETAILS_LIST,
-            },
-            userLeavingStatus: {
-                key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_USER_IS_LEAVING_ROOM}${getReportID(route)}`,
-                initialValue: false,
-            },
-        },
-        true,
-    ),
-)(ReportScreen);
+export default compose(withViewportOffsetTop, withCurrentReportID)(ReportScreen);

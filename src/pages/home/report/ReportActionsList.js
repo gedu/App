@@ -310,6 +310,7 @@ function ReportActionsList({
             } else {
                 shouldDisplay = reportAction.reportActionID === currentUnreadMarker;
             }
+
             return shouldDisplay;
         },
         [currentUnreadMarker, sortedReportActions, report.lastReadTime, messageManuallyMarkedUnread],

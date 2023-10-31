@@ -1,4 +1,5 @@
 import {deepEqual} from 'fast-equals';
+import {atom, useAtom} from 'jotai';
 import lodashGet from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, {useCallback, useMemo, useRef} from 'react';
@@ -7,6 +8,7 @@ import {withOnyx} from 'react-native-onyx';
 import _ from 'underscore';
 import withCurrentReportID from '@components/withCurrentReportID';
 import withNavigationFocus from '@components/withNavigationFocus';
+import * as OnyxExtends from '@hooks/onyxBridge/onyxExtends';
 import useLocalize from '@hooks/useLocalize';
 import compose from '@libs/compose';
 import * as SessionUtils from '@libs/SessionUtils';
@@ -63,9 +65,50 @@ const defaultProps = {
     policies: {},
 };
 
-function SidebarLinksData({isFocused, allReportActions, betas, chatReports, currentReportID, insets, isLoadingReportData, onLinkClick, policies, priorityMode}) {
-    const {translate} = useLocalize();
+const chatReportsAtom = atom((get) => {
+    const chatReports = get(OnyxExtends.chatReportsAtom);
+    if (!chatReports) {
+        return {};
+    }
+    return chatReports;
+});
 
+const allReportActionsTransformAtom = atom((get) => {
+    const allReportActions = get(OnyxExtends.allReportActionsAtom);
+    if (!allReportActions) {
+        return {};
+    }
+    return _.reduce(
+        _.map(allReportActions, (reportAction) => {
+            // console.log('>>> report: ', reportAction);
+            const obj = {};
+            obj[`reportActions_${Object.keys(reportAction)[0]}`] = {
+                errors: lodashGet(reportAction, 'errors', []),
+                message: [
+                    {
+                        moderationDecision: {decision: lodashGet(reportAction, 'message[0].moderationDecision.decision')},
+                    },
+                ],
+            };
+            return obj;
+        }),
+        (memo, item) => {
+            console.log('>>> item: ', item);
+            return {...memo, ...item};
+        },
+        {},
+    );
+});
+
+function SidebarLinksData({isFocused, allReportActions, currentReportID, insets, isLoadingReportData, onLinkClick}) {
+    const {translate} = useLocalize();
+    const [chatReports] = useAtom(chatReportsAtom);
+    const [priorityMode] = useAtom(OnyxExtends.priorityModeAtom);
+    const [betas] = useAtom(OnyxExtends.betasAtom);
+    const [policies] = useAtom(OnyxExtends.policiesAtom);
+    // const [allReportActionsAtom] = useAtom(allReportActionsTransformAtom);
+    // console.log('allReportActionsAtom: ', allReportActionsAtom);
+    // console.log('allReportActions: ', allReportActions);
     const reportIDsRef = useRef(null);
     const isLoading = SessionUtils.didUserLogInDuringSession() && isLoadingReportData;
     const optionListItems = useMemo(() => {
@@ -122,62 +165,21 @@ SidebarLinksData.defaultProps = defaultProps;
 SidebarLinksData.displayName = 'SidebarLinksData';
 
 /**
- * This function (and the few below it), narrow down the data from Onyx to just the properties that we want to trigger a re-render of the component. This helps minimize re-rendering
- * and makes the entire component more performant because it's not re-rendering when a bunch of properties change which aren't ever used in the UI.
- * @param {Object} [report]
- * @returns {Object|undefined}
- */
-const chatReportSelector = (report) =>
-    report && {
-        reportID: report.reportID,
-        participantAccountIDs: report.participantAccountIDs,
-        hasDraft: report.hasDraft,
-        isPinned: report.isPinned,
-        isHidden: report.isHidden,
-        errorFields: {
-            addWorkspaceRoom: report.errorFields && report.errorFields.addWorkspaceRoom,
-        },
-        lastMessageText: report.lastMessageText,
-        lastVisibleActionCreated: report.lastVisibleActionCreated,
-        iouReportID: report.iouReportID,
-        total: report.total,
-        nonReimbursableTotal: report.nonReimbursableTotal,
-        hasOutstandingIOU: report.hasOutstandingIOU,
-        isWaitingOnBankAccount: report.isWaitingOnBankAccount,
-        statusNum: report.statusNum,
-        stateNum: report.stateNum,
-        chatType: report.chatType,
-        type: report.type,
-        policyID: report.policyID,
-        visibility: report.visibility,
-        lastReadTime: report.lastReadTime,
-        // Needed for name sorting:
-        reportName: report.reportName,
-        policyName: report.policyName,
-        oldPolicyName: report.oldPolicyName,
-        // Other less obvious properites considered for sorting:
-        ownerAccountID: report.ownerAccountID,
-        currency: report.currency,
-        managerID: report.managerID,
-        // Other important less obivous properties for filtering:
-        parentReportActionID: report.parentReportActionID,
-        parentReportID: report.parentReportID,
-    };
-
-/**
  * @param {Object} [reportActions]
  * @returns {Object|undefined}
  */
 const reportActionsSelector = (reportActions) =>
     reportActions &&
-    _.map(reportActions, (reportAction) => ({
-        errors: lodashGet(reportAction, 'errors', []),
-        message: [
-            {
-                moderationDecision: {decision: lodashGet(reportAction, 'message[0].moderationDecision.decision')},
-            },
-        ],
-    }));
+    _.map(reportActions, (reportAction) => {
+        return {
+            errors: lodashGet(reportAction, 'errors', []),
+            message: [
+                {
+                    moderationDecision: {decision: lodashGet(reportAction, 'message[0].moderationDecision.decision')},
+                },
+            ],
+        };
+    });
 
 /**
  * @param {Object} [policy]
@@ -194,26 +196,12 @@ export default compose(
     withCurrentReportID,
     withNavigationFocus,
     withOnyx({
-        chatReports: {
-            key: ONYXKEYS.COLLECTION.REPORT,
-            selector: chatReportSelector,
-        },
         isLoadingReportData: {
             key: ONYXKEYS.IS_LOADING_REPORT_DATA,
-        },
-        priorityMode: {
-            key: ONYXKEYS.NVP_PRIORITY_MODE,
-        },
-        betas: {
-            key: ONYXKEYS.BETAS,
         },
         allReportActions: {
             key: ONYXKEYS.COLLECTION.REPORT_ACTIONS,
             selector: reportActionsSelector,
-        },
-        policies: {
-            key: ONYXKEYS.COLLECTION.POLICY,
-            selector: policySelector,
         },
     }),
 )(SidebarLinksData);
