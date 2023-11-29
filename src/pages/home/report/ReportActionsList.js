@@ -5,6 +5,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {DeviceEventEmitter} from 'react-native';
 import Animated, {useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
 import _ from 'underscore';
+import {cache} from 'webpack';
 import InvertedFlatList from '@components/InvertedFlatList';
 import {withPersonalDetails} from '@components/OnyxProvider';
 import withCurrentUserPersonalDetails, {withCurrentUserPersonalDetailsDefaultProps, withCurrentUserPersonalDetailsPropTypes} from '@components/withCurrentUserPersonalDetails';
@@ -146,6 +147,7 @@ function ReportActionsList({
     const opacity = useSharedValue(0);
     const userActiveSince = useRef(null);
     const unreadActionSubscription = useRef(null);
+    const itemDeleted = useRef(false);
     const markerInit = () => {
         if (!cacheUnreadMarkers.has(report.reportID)) {
             return null;
@@ -199,13 +201,17 @@ function ReportActionsList({
             }
         }
 
+        if (sortedReportActions.length < reportActionSize.current) {
+            itemDeleted.current = true;
+        }
+
         if (currentUnreadMarker || reportActionSize.current === sortedReportActions.length) {
             return;
         }
-
         cacheUnreadMarkers.delete(report.reportID);
         reportActionSize.current = sortedReportActions.length;
         setCurrentUnreadMarker(null);
+        itemDeleted.current = false;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sortedReportActions.length, report.reportID]);
 
@@ -330,7 +336,6 @@ function ReportActionsList({
      * Evaluate new unread marker visibility for each of the report actions.
      * @returns boolean
      */
-
     const shouldDisplayNewMarker = useCallback(
         (reportAction, index) => {
             let shouldDisplay = false;
@@ -346,6 +351,10 @@ function ReportActionsList({
                 }
             } else {
                 shouldDisplay = reportAction.reportActionID === currentUnreadMarker;
+
+                if (!shouldDisplay && itemDeleted.current) {
+                    shouldDisplay = reportAction.previousReportActionID === currentUnreadMarker;
+                }
             }
 
             return shouldDisplay;
@@ -363,7 +372,8 @@ function ReportActionsList({
                 return;
             }
             markerFound = true;
-            if (!currentUnreadMarker && currentUnreadMarker !== reportAction.reportActionID) {
+            if ((!currentUnreadMarker && currentUnreadMarker !== reportAction.reportActionID) || itemDeleted.current) {
+                itemDeleted.current = false;
                 cacheUnreadMarkers.set(report.reportID, reportAction.reportActionID);
                 setCurrentUnreadMarker(reportAction.reportActionID);
             }
@@ -371,7 +381,7 @@ function ReportActionsList({
         if (!markerFound) {
             setCurrentUnreadMarker(null);
         }
-    }, [sortedReportActions, report.lastReadTime, report.reportID, messageManuallyMarkedUnread, shouldDisplayNewMarker, currentUnreadMarker]);
+    }, [sortedReportActions, report.reportID, messageManuallyMarkedUnread, shouldDisplayNewMarker, currentUnreadMarker]);
 
     const renderItem = useCallback(
         ({item: reportAction, index}) => (
@@ -384,10 +394,10 @@ function ReportActionsList({
                 sortedReportActions={sortedReportActions}
                 mostRecentIOUReportActionID={mostRecentIOUReportActionID}
                 shouldHideThreadDividerLine={shouldHideThreadDividerLine}
-                shouldDisplayNewMarker={shouldDisplayNewMarker(reportAction, index)}
+                shouldDisplayNewMarker={reportAction.reportActionID === currentUnreadMarker}
             />
         ),
-        [report, linkedReportActionID, hasOutstandingIOU, sortedReportActions, mostRecentIOUReportActionID, shouldHideThreadDividerLine, shouldDisplayNewMarker],
+        [report, linkedReportActionID, hasOutstandingIOU, sortedReportActions, mostRecentIOUReportActionID, shouldHideThreadDividerLine, currentUnreadMarker],
     );
 
     // Native mobile does not render updates flatlist the changes even though component did update called.
