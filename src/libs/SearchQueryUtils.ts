@@ -284,7 +284,7 @@ function buildSearchQueryJSON(query: SearchQueryString) {
  *
  * In a way this is the reverse of buildSearchQueryJSON()
  */
-function buildSearchQueryString(queryJSON?: SearchQueryJSON) {
+function buildSearchQueryString(queryJSON?: SearchQueryJSON, isNaturalLngSearch = true) {
     const queryParts: string[] = [];
     const defaultQueryJSON = buildSearchQueryJSON('');
 
@@ -311,7 +311,10 @@ function buildSearchQueryString(queryJSON?: SearchQueryJSON) {
         const filterValueString = buildFilterValuesString(filter.key, filter.filters);
         queryParts.push(filterValueString.trim());
     }
-
+    // Flag for natural language query
+    if (isNaturalLngSearch) {
+        return queryParts.at(queryParts.length - 1) ?? '';
+    }
     return queryParts.join(' ');
 }
 
